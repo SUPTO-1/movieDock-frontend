@@ -1,0 +1,1 @@
+export { MediaCard as MediaPoster } from "@/components/media/MediaCard";
