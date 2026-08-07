@@ -1,17 +1,36 @@
 import Link from "next/link";
-import { ArrowLeft, Search } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { MediaCard } from "@/components/media/MediaCard";
+import { EmptyState } from "@/components/media/EmptyState";
+import { type CollectionPageConfig, findCollectionPage } from "@/config/collection-pages";
 import type { MediaItem } from "@/types/media";
 
 type MediaCollectionPageProps = {
-  eyebrow: string;
-  title: string;
-  description: string;
+  /** Use this to look up the page config (slug-based routing). */
+  slug?: string;
+  /** Or pass these explicitly for one-off pages. */
+  eyebrow?: string;
+  title?: string;
+  description?: string;
   items: MediaItem[];
+  emptyVariant?: "no-matches" | "no-content";
+  emptyTitle?: string;
+  emptyDescription?: string;
 };
 
-export function MediaCollectionPage({ eyebrow, title, description, items }: MediaCollectionPageProps) {
+export function MediaCollectionPage(props: MediaCollectionPageProps) {
+  const config: CollectionPageConfig | undefined = props.slug ? findCollectionPage(props.slug) : undefined;
+  const eyebrow = props.eyebrow ?? config?.eyebrow ?? "Library";
+  const title = props.title ?? config?.title ?? "Library";
+  const description = props.description ?? config?.description ?? "";
+  const emptyVariant = props.emptyVariant ?? config?.emptyVariant ?? "no-matches";
+  const emptyTitle = props.emptyTitle ?? config?.emptyTitle ?? "No titles found";
+  const emptyDescription =
+    props.emptyDescription ?? config?.emptyDescription ?? "Try a different category or add more media to your Jellyfin library.";
+  const items = props.items;
+  const hasItems = items.length > 0;
+
   return (
     <AppShell>
       <section className="space-y-8">
@@ -30,16 +49,20 @@ export function MediaCollectionPage({ eyebrow, title, description, items }: Medi
           </Link>
         </div>
 
-        <div className="flex items-center gap-3 rounded-3xl border border-dashed border-(--border) bg-(--surface) px-4 py-3 text-sm text-(--muted)">
-          <Search className="h-4 w-4" />
-          Showing {items.slice(0, 20).length} items in this collection.
-        </div>
-
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {items.slice(0, 20).map((item) => (
-            <MediaCard key={item.id} item={item} className="h-full" />
-          ))}
-        </div>
+        {hasItems ? (
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {items.slice(0, 20).map((item) => (
+              <MediaCard key={item.id} item={item} className="h-full" />
+            ))}
+          </div>
+        ) : (
+          <EmptyState
+            variant={emptyVariant}
+            title={emptyTitle}
+            description={emptyDescription}
+            action={{ href: "/library", label: "Browse your library" }}
+          />
+        )}
       </section>
     </AppShell>
   );

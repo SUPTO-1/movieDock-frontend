@@ -1,8 +1,10 @@
 import { MediaCollectionPage } from "@/components/media/MediaCollectionPage";
+import { findCollectionPage } from "@/config/collection-pages";
 import { getMediaItems } from "@/lib/backend";
 
-export default async function MoviesPage() {
-  const items = await getMediaItems("movie", 20);
+const config = findCollectionPage("movies")!;
 
-  return <MediaCollectionPage eyebrow="Library / Movies" title="Movies" description="Curated cinematic picks from your Jellyfin library." items={items} />;
+export default async function MoviesPage() {
+  const items = await getMediaItems(config.type, 20);
+  return <MediaCollectionPage slug={config.slug} items={items} />;
 }

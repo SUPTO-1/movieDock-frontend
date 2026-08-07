@@ -1,1 +1,0 @@
-export { MediaRow as MediaGrid } from "@/components/media/MediaRow";
