@@ -1,8 +1,10 @@
 import { MediaCollectionPage } from "@/components/media/MediaCollectionPage";
+import { findCollectionPage } from "@/config/collection-pages";
 import { getMediaItems } from "@/lib/backend";
 
-export default async function AnimePage() {
-  const items = await getMediaItems("anime", 20);
+const config = findCollectionPage("anime")!;
 
-  return <MediaCollectionPage eyebrow="Library / Anime" title="Anime" description="Stylized worlds and character-first storytelling." items={items} />;
+export default async function AnimePage() {
+  const items = await getMediaItems(config.type, 20);
+  return <MediaCollectionPage slug={config.slug} items={items} />;
 }

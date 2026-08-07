@@ -1,79 +1,108 @@
 "use client";
 
 import Link from "next/link";
-import { Search, Settings2 } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { Settings2 } from "lucide-react";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { ServerStatus } from "@/components/layout/ServerStatus";
+import { NavbarSearch } from "@/components/layout/NavbarSearch";
+import { ScanLibraryButton } from "@/components/layout/ScanLibraryButton";
+import { homePath, moviesPath, tvShowsPath, animePath, libraryPath } from "@/lib/routes";
 
 const navItems = [
-  { href: "/movies", label: "Movies" },
-  { href: "/tv-shows", label: "TV Shows" },
-  { href: "/anime", label: "Anime" },
-  { href: "/library", label: "Library" },
-  { href: "/search", label: "Search" },
-  { href: "/settings", label: "Settings" },
+  { href: homePath(), label: "Home", exact: true },
+  { href: moviesPath(), label: "Movies" },
+  { href: tvShowsPath(), label: "TV Shows" },
+  { href: animePath(), label: "Anime" },
+  { href: libraryPath(), label: "Library" },
 ];
 
+function isActive(pathname: string, href: string, exact?: boolean) {
+  if (exact) {
+    return pathname === href;
+  }
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
+
 export function Navbar() {
+  const pathname = usePathname() ?? "/";
+
   return (
-    <header className="sticky top-0 z-50 border-b border-(--border) bg-(--background)/80 backdrop-blur-2xl">
-      <div className="mx-auto flex w-full max-w-[1600px] flex-col gap-4 px-4 py-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
-          <div className="flex items-center justify-between gap-4">
-            <Link href="/" className="group flex items-center gap-3">
-              <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-(--accent) text-sm font-black text-white shadow-lg shadow-(color:--accent)/25 transition duration-300 group-hover:scale-[1.04]">
-                M
-              </span>
-              <div>
-                <p className="text-[0.68rem] font-bold uppercase tracking-[0.38em] text-(--accent)">MovieDock</p>
-                <p className="text-sm text-(--muted)">Jellyfin-powered streaming front end</p>
-              </div>
-            </Link>
+    <header className="sticky top-0 z-50 border-b border-(--border) bg-(--background)/85 backdrop-blur-xl">
+      <div className="mx-auto flex h-16 w-full max-w-[1600px] items-center gap-3 px-4 sm:px-6 lg:px-8">
+        <Link href={homePath()} className="group flex items-center gap-2.5">
+          <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-(--accent) text-sm font-black text-white shadow-lg shadow-(color:--accent)/25 transition group-hover:scale-[1.04]">
+            M
+          </span>
+          <span className="hidden text-[0.95rem] font-bold tracking-tight text-(--foreground) sm:inline">
+            Movie<span className="text-(--accent)">Dock</span>
+          </span>
+        </Link>
 
-            <div className="xl:hidden">
-              <ThemeToggle />
-            </div>
+        <nav className="ml-2 hidden items-center gap-1 md:flex">
+          {navItems.map((item) => {
+            const active = isActive(pathname, item.href, item.exact);
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                aria-current={active ? "page" : undefined}
+                className={`rounded-full px-3 py-1.5 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--accent) ${
+                  active
+                    ? "bg-(--accent) text-white shadow-sm"
+                    : "text-(--muted) hover:bg-(--surface) hover:text-(--foreground)"
+                }`}
+              >
+                {item.label}
+              </Link>
+            );
+          })}
+        </nav>
+
+        <div className="ml-auto flex flex-1 items-center justify-end gap-2 sm:gap-3">
+          <div className="hidden flex-1 sm:flex sm:max-w-sm">
+            <NavbarSearch />
           </div>
 
-          <div className="flex flex-1 items-center justify-end gap-3">
-            <label className="relative w-full max-w-105">
-              <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-(--muted)" />
-              <input
-                type="search"
-                placeholder="Search title, category, or description"
-                className="h-11 w-full rounded-full border border-(--border) bg-(--surface) pl-11 pr-4 text-sm text-(--foreground) shadow-sm outline-none transition placeholder:text-(--muted) focus:border-(--accent) focus:ring-2 focus:ring-(--accent-soft)"
-              />
-            </label>
-            <div className="hidden xl:block">
-              <ThemeToggle />
-            </div>
-            <Link
-              href="/settings"
-              className="inline-flex h-11 items-center gap-2 rounded-full border border-(--border) bg-(--surface) px-4 text-sm font-medium text-(--foreground) transition duration-200 hover:bg-(--surface-elevated) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--accent)"
-            >
-              <Settings2 className="h-4 w-4" />
-              <span className="hidden sm:inline">Settings</span>
-            </Link>
+          <ScanLibraryButton />
+
+          <div className="hidden md:block">
+            <ServerStatus />
           </div>
+          <div className="hidden md:block">
+            <ThemeToggle />
+          </div>
+
+          <Link
+            href="/settings"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-(--border) bg-(--surface) text-(--foreground) transition hover:bg-(--surface-elevated) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--accent) md:px-3 md:w-auto md:gap-2"
+            aria-label="Settings"
+          >
+            <Settings2 className="h-4 w-4" />
+            <span className="hidden md:inline text-sm font-medium">Settings</span>
+          </Link>
         </div>
+      </div>
 
-        <div className="flex flex-wrap items-center gap-2 lg:gap-3">
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="rounded-full border border-transparent px-4 py-2 text-sm font-medium text-(--muted) transition hover:border-(--border) hover:bg-(--surface) hover:text-(--foreground) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--accent)"
-            >
-              {item.label}
-            </Link>
-          ))}
-          <div className="ml-auto hidden xl:block">
-            <ServerStatus connected />
-          </div>
-          <div className="inline-flex items-center gap-2 rounded-full border border-(--border) bg-(--surface) px-4 py-2 text-sm font-medium text-(--foreground) xl:hidden">
-            <span className="h-2.5 w-2.5 rounded-full bg-emerald-400" />
-            Connected to local media server
-          </div>
+      <div className="border-t border-(--border) md:hidden">
+        <div className="mx-auto flex w-full max-w-[1600px] items-center gap-1 overflow-x-auto px-4 py-2 sm:px-6 [&::-webkit-scrollbar]:hidden">
+          {navItems.map((item) => {
+            const active = isActive(pathname, item.href, item.exact);
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                aria-current={active ? "page" : undefined}
+                className={`whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--accent) ${
+                  active
+                    ? "bg-(--accent) text-white"
+                    : "text-(--muted) hover:bg-(--surface) hover:text-(--foreground)"
+                }`}
+              >
+                {item.label}
+              </Link>
+            );
+          })}
         </div>
       </div>
     </header>

@@ -3,17 +3,17 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import type { MediaItem } from "@/types/media";
-import { MediaCard } from "@/components/media/MediaCard";
+import type { ContinueWatchingItem } from "@/types/media";
+import { ContinueWatchingCard } from "@/components/media/ContinueWatchingCard";
 
-type MediaRowProps = {
+type ContinueWatchingRowProps = {
   title: string;
   description?: string;
-  items: MediaItem[];
+  items: ContinueWatchingItem[];
   href?: string;
 };
 
-export function MediaRow({ title, description, items, href }: MediaRowProps) {
+export function ContinueWatchingRow({ title, description, items, href }: ContinueWatchingRowProps) {
   const scrollerRef = useRef<HTMLDivElement | null>(null);
   const [showLeft, setShowLeft] = useState(false);
   const [showRight, setShowRight] = useState(false);
@@ -74,8 +74,8 @@ export function MediaRow({ title, description, items, href }: MediaRowProps) {
           ref={scrollerRef}
           className="flex snap-x snap-mandatory gap-3 overflow-x-auto pb-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden sm:gap-4"
         >
-          {items.slice(0, 30).map((item) => (
-            <MediaCard key={item.id} item={item} showRail />
+          {items.map((entry) => (
+            <ContinueWatchingCard key={`${entry.media.id}-${entry.episode?.id ?? "movie"}`} item={entry} />
           ))}
         </div>
 

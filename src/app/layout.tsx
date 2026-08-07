@@ -15,7 +15,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "MovieDock",
-  description: "A premium Jellyfin-powered media experience for movies and TV.",
+  description:
+    "Your personal home for movies, TV shows, anime, and media — powered by Jellyfin.",
 };
 
 export default function RootLayout({
