@@ -17,7 +17,6 @@ import {
   ChevronDown,
   ChevronFirst,
   ChevronLast,
-  ChevronLeft,
   Gauge,
   Languages,
   Loader2,
@@ -55,14 +54,15 @@ type MediaPlayerProps = {
   /**
    * When true, clicking the video (or empty shell area) enters browser
    * fullscreen. Subsequent clicks inside fullscreen toggle play/pause and
-   * briefly show the controls overlay. The user exits via the in-overlay
-   * back button (or ESC) which calls `onExitFullscreen`.
+   * briefly show the controls overlay. The user exits via ESC, the `f`
+   * shortcut, or the fullscreen toggle button — all of which just exit
+   * fullscreen and leave the user on the underlying watch page.
    */
   fullscreenOnFirstClick?: boolean;
   /**
-   * Called when the user requests to leave fullscreen via the in-overlay
-   * back button. The parent (watch page) handles navigation back to the
-   * series/movie detail page.
+   * Reserved for future use; currently no in-player control triggers it
+   * because the watch page now exposes its own Back button above the
+   * player. Kept on the prop signature to avoid breaking callers.
    */
   onExitFullscreen?: () => void;
   playbackUrl: string;
@@ -1311,27 +1311,6 @@ export const MediaPlayer = forwardRef<MediaPlayerHandle, MediaPlayerProps>(funct
               </button>
             </div>
           </div>
-        </div>
-      ) : null}
-
-      {/* Top-left: back button — only visible when the parent supplied
-          `onExitFullscreen` (i.e. we're inside the watch route). Clicking
-          it exits fullscreen and hands control back to the parent so it can
-          navigate to the series/movie detail page. */}
-      {onExitFullscreen ? (
-        <div
-          className={`absolute left-0 top-0 z-30 flex p-3 transition-opacity duration-300 sm:p-4 ${overlayOpacity} ${overlayPointer}`}
-        >
-          <button
-            type="button"
-            onClick={onExitFullscreen}
-            aria-label="Back to details"
-            title="Back (Esc)"
-            className="inline-flex h-9 items-center gap-1.5 rounded-full border border-white/20 bg-black/55 px-3 text-xs font-semibold text-white backdrop-blur transition hover:bg-black/75 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
-          >
-            <ChevronLeft className="h-3.5 w-3.5" />
-            Back
-          </button>
         </div>
       ) : null}
 
