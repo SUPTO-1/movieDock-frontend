@@ -13,6 +13,12 @@ import { episodeLabel } from "@/lib/utils";
 type WatchViewProps = {
   item: MediaItem;
   seriesId: string;
+  /**
+   * The id used for the "Back" button — typically the parent series id when
+   * watching an episode, falling back to the URL id for movies. Defaults to
+   * `seriesId` so legacy callers keep working.
+   */
+  parentSeriesId?: string;
   seriesTitle: string;
   parentSeriesArtwork?: { posterUrl: string; backdropUrl: string };
   playbackUrl: string;
@@ -24,6 +30,7 @@ type WatchViewProps = {
 export function WatchView({
   item,
   seriesId,
+  parentSeriesId,
   seriesTitle,
   parentSeriesArtwork,
   playbackUrl,
@@ -56,10 +63,14 @@ export function WatchView({
       } catch {
         // Ignore — we'll still navigate back even if exit fails.
       }
-      router.push(mediaPath(seriesId));
+      // Prefer the explicit parent series id when given (so episode routes
+      // land on the series' details page instead of 404'ing on the episode
+      // id). Falls back to seriesId for movies / direct routes.
+      const target = parentSeriesId ?? seriesId;
+      router.push(target ? mediaPath(target) : "/");
     };
     void exit();
-  }, [router, seriesId]);
+  }, [router, seriesId, parentSeriesId]);
 
   return (
     <div className="min-h-screen bg-black text-white">

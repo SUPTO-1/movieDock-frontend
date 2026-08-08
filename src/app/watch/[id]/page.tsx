@@ -35,11 +35,18 @@ export default async function WatchPage({ params, searchParams }: WatchPageProps
         })
       : basePlaybackUrl;
 
+  // The Back button on the watch page should land on the parent series'
+  // details page, not on the episode's own detail page (which 404s). For a
+  // movie this is just the URL id; for an episode we use the parent series'
+  // id Jellyfin reported on the item.
+  const parentSeriesId = activeItem.seriesId ?? item.seriesId ?? id;
+
   return (
     <main className="min-h-screen bg-black">
       <WatchView
         item={activeItem}
         seriesId={id}
+        parentSeriesId={parentSeriesId}
         seriesTitle={item.title}
         parentSeriesArtwork={
           activeEpisode

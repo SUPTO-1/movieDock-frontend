@@ -175,6 +175,13 @@ function signatureOf(limit: number): string {
 
 const EMPTY_LIST: ContinueWatchingItem[] = [];
 
+// Exported so React components can pass a stable reference to
+// `useSyncExternalStore` (e.g. `getServerSnapshot`). Returning a fresh `[]`
+// each call triggers "The result of getServerSnapshot should be cached to
+// avoid an infinite loop" and can also cause hydration mismatches when the
+// server renders an empty row but the client has Continue Watching entries.
+export const EMPTY_CONTINUE_WATCHING: ContinueWatchingItem[] = EMPTY_LIST;
+
 export function getContinueWatchingSnapshot(limit: number = DEFAULT_LIMIT): ContinueWatchingItem[] {
   const sig = signatureOf(limit);
   if (cachedSnapshotSig === sig && cachedSnapshotLimit === limit && cachedSnapshot.length > 0) {
