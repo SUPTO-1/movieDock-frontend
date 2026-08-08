@@ -47,6 +47,31 @@ export function ContinueWatchingRow({ title, description, items, href }: Continu
     el.scrollBy({ left: direction === "left" ? -amount : amount, behavior: "smooth" });
   };
 
+  // The card does the actual removal via `clearProgress`. The row just
+  // needs to know it happened so it can drop the focus to the next focusable
+  // element in tab order, otherwise TV/keyboard users get stranded with no
+  // focused card. We use a tiny ref-keyed lookup so the focus shift is
+  // accurate even when the removed item was somewhere in the middle.
+  const cardRefs = useRef<Map<string, HTMLDivElement | null>>(new Map());
+  const handleRemoved = useCallback((removed: ContinueWatchingItem) => {
+    const removedKey = cardKey(removed);
+    const remaining = items.filter((entry) => cardKey(entry) !== removedKey);
+    if (remaining.length === 0) return; // Row will unmount; focus falls back to document.
+    const removedIndex = items.findIndex((entry) => cardKey(entry) === removedKey);
+    const fallbackIndex = removedIndex >= remaining.length ? remaining.length - 1 : removedIndex;
+    const nextKey = cardKey(remaining[fallbackIndex]);
+    // Wait one frame so React has removed the old card before we try to
+    // focus the neighbour — otherwise the browser may refuse the focus.
+    requestAnimationFrame(() => {
+      const target = cardRefs.current.get(nextKey);
+      if (!target) return;
+      const focusable = target.querySelector<HTMLElement>(
+        "a, button:not([aria-label^='Remove'])",
+      );
+      focusable?.focus();
+    });
+  }, [items]);
+
   if (items.length === 0) {
     return null;
   }
@@ -74,9 +99,22 @@ export function ContinueWatchingRow({ title, description, items, href }: Continu
           ref={scrollerRef}
           className="flex snap-x snap-mandatory gap-3 overflow-x-auto pb-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden sm:gap-4"
         >
-          {items.map((entry) => (
-            <ContinueWatchingCard key={`${entry.media.id}-${entry.episode?.id ?? "movie"}`} item={entry} />
-          ))}
+          {items.map((entry) => {
+            const key = cardKey(entry);
+            return (
+              <ContinueWatchingCard
+                key={key}
+                item={entry}
+                onRemoved={handleRemoved}
+                containerRef={(node) => {
+                  // React invokes the ref callback with `null` on unmount;
+                  // mirror that so we don't leak stale nodes in the map.
+                  if (node) cardRefs.current.set(key, node);
+                  else cardRefs.current.delete(key);
+                }}
+              />
+            );
+          })}
         </div>
 
         {showLeft ? (
@@ -102,4 +140,11 @@ export function ContinueWatchingRow({ title, description, items, href }: Continu
       </div>
     </section>
   );
+}
+
+// Stable key for a Continue Watching entry — episodes collapse onto the
+// parent series, movies use their own id. Matches the storage key in
+// `continueWatching.ts` so removals look up the right slot.
+function cardKey(entry: ContinueWatchingItem): string {
+  return entry.episode?.id ? `series:${entry.media.id}` : `item:${entry.media.id}`;
 }

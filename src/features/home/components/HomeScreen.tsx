@@ -5,8 +5,12 @@ import { AppShell } from "@/components/layout/AppShell";
 import { HeroBanner } from "@/components/media/HeroBanner";
 import { MediaRow } from "@/components/media/MediaRow";
 import { ContinueWatchingRow } from "@/components/media/ContinueWatchingRow";
-import type { ContinueWatchingItem, MediaItem } from "@/types/media";
-import { loadContinueWatching, subscribeToContinueWatching } from "@/lib/continueWatching";
+import type { MediaItem } from "@/types/media";
+import {
+  EMPTY_CONTINUE_WATCHING,
+  loadContinueWatching,
+  subscribeToContinueWatching,
+} from "@/lib/continueWatching";
 
 type LibraryRow = {
   title: string;
@@ -29,7 +33,7 @@ export function HomeScreen({ heroMedia, recentlyAdded, libraryRows }: HomeScreen
   const continueWatching = useSyncExternalStore(
     subscribeToContinueWatching,
     () => loadContinueWatching(20),
-    () => [] as ContinueWatchingItem[],
+    () => EMPTY_CONTINUE_WATCHING,
   );
 
   return (
