@@ -88,8 +88,14 @@ export async function getMediaSections() {
 
 export async function getBackendHealth(): Promise<BackendHealth> {
   try {
-    const response = await fetchJson<BackendHealth>("/api/jellyfin/health");
-    return response;
+    // Client থেকে same-origin path ব্যবহার করো (Next.js proxy দিয়ে যাবে)
+    const response = await fetch("/api/jellyfin/health", { cache: "no-store" });
+
+    if (!response.ok) {
+      throw new Error(`Backend request failed: ${response.status} ${response.statusText}`);
+    }
+
+    return (await response.json()) as BackendHealth;
   } catch {
     return { connected: false };
   }

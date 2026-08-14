@@ -3,6 +3,7 @@ import type { NextConfig } from "next";
 const backendUrl = new URL(process.env.BACKEND_URL ?? "http://127.0.0.1:5000");
 
 const nextConfig: NextConfig = {
+  allowedDevOrigins: ["192.168.1.103"],
   async rewrites() {
     return [
       // Keep the specific jellyfin rule first so it matches before the
