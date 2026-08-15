@@ -73,10 +73,10 @@ export function EpisodePreview({ episodes, seriesTitle, seriesId }: EpisodePrevi
       <div className="order-2 space-y-5 lg:order-1">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.34em] text-(--accent)">Episodes</p>
-            <h2 className="mt-1 text-2xl font-semibold text-(--foreground)">{seriesTitle}</h2>
+            <p className="text-xs font-semibold uppercase tracking-[0.34em] text-accent">Episodes</p>
+            <h2 className="mt-1 text-2xl font-semibold text-foreground">{seriesTitle}</h2>
           </div>
-          <span className="rounded-full border border-(--border) bg-(--surface) px-3 py-1 text-xs text-(--muted)">
+          <span className="rounded-full border border-border-themed bg-surface px-3 py-1 text-xs text-muted">
             {episodes.length} episodes
           </span>
         </div>
@@ -90,10 +90,10 @@ export function EpisodePreview({ episodes, seriesTitle, seriesId }: EpisodePrevi
                   key={group.seasonNumber}
                   type="button"
                   onClick={() => setActiveSeason(group.seasonNumber)}
-                  className={`rounded-full border px-4 py-2 text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--accent) ${
+                  className={`rounded-full border px-4 py-2 text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
                     active
-                      ? "border-(--accent) bg-(--accent) text-white"
-                      : "border-(--border) bg-(--surface) text-(--muted) hover:border-(--accent) hover:text-(--foreground)"
+                      ? "border-accent bg-accent text-white"
+                      : "border-border-themed bg-surface text-muted hover:border-accent hover:text-foreground"
                   }`}
                 >
                   {group.seasonName}
@@ -103,7 +103,7 @@ export function EpisodePreview({ episodes, seriesTitle, seriesId }: EpisodePrevi
           </div>
         ) : null}
 
-        <ul className="divide-y divide-(--border) overflow-hidden rounded-2xl border border-(--border) bg-(--surface)">
+        <ul className="divide-y divide-border-themed overflow-hidden rounded-2xl border border-border-themed bg-surface">
           {currentGroup?.episodes.map((episode) => {
             const active = episode.id === focusedEpisode.id;
             return (
@@ -113,11 +113,11 @@ export function EpisodePreview({ episodes, seriesTitle, seriesId }: EpisodePrevi
                   onMouseEnter={() => setFocusedEpisodeId(episode.id)}
                   onFocus={() => setFocusedEpisodeId(episode.id)}
                   aria-current={active ? "true" : undefined}
-                  className={`flex w-full items-center gap-4 p-3 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--accent) sm:p-4 ${
-                    active ? "bg-(--accent-soft)" : "hover:bg-(--surface-elevated)"
+                  className={`flex w-full items-center gap-4 p-3 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent sm:p-4 ${
+                    active ? "bg-accent-soft" : "hover:bg-surface-elevated"
                   }`}
                 >
-                  <div className="relative h-16 w-28 flex-none overflow-hidden rounded-xl bg-(--surface-elevated) sm:h-20 sm:w-32">
+                  <div className="relative h-16 w-28 flex-none overflow-hidden rounded-xl bg-surface-elevated sm:h-20 sm:w-32">
                     {episode.backdropUrl ? (
                       <Image
                         src={episode.backdropUrl}
@@ -136,19 +136,19 @@ export function EpisodePreview({ episodes, seriesTitle, seriesId }: EpisodePrevi
                     {typeof episode.progress === "number" && episode.progress > 0 ? (
                       <div className="absolute inset-x-0 bottom-0 h-1 bg-white/20">
                         <div
-                          className="h-full bg-(--accent)"
+                          className="h-full bg-accent"
                           style={{ width: `${Math.min(100, Math.max(0, episode.progress))}%` }}
                         />
                       </div>
                     ) : null}
                   </div>
                   <div className="min-w-0 flex-1 space-y-1">
-                    <p className="text-[0.65rem] font-semibold uppercase tracking-[0.24em] text-(--accent)">
+                    <p className="text-[0.65rem] font-semibold uppercase tracking-[0.24em] text-accent">
                       {formatLabel(episode.parentIndexNumber, episode.indexNumber)}
                     </p>
-                    <p className="line-clamp-1 text-sm font-semibold text-(--foreground)">{episode.title}</p>
-                    <p className="line-clamp-2 text-xs text-(--muted)">{episode.overview}</p>
-                    <div className="flex flex-wrap items-center gap-2 pt-1 text-[0.65rem] text-(--muted)">
+                    <p className="line-clamp-1 text-sm font-semibold text-foreground">{episode.title}</p>
+                    <p className="line-clamp-2 text-xs text-muted">{episode.overview}</p>
+                    <div className="flex flex-wrap items-center gap-2 pt-1 text-[0.65rem] text-muted">
                       {hasKnownDuration(episode) ? (
                         <span className="inline-flex items-center gap-1">
                           <Clock className="h-3 w-3" />
@@ -160,7 +160,7 @@ export function EpisodePreview({ episodes, seriesTitle, seriesId }: EpisodePrevi
                       ) : null}
                     </div>
                   </div>
-                  <ChevronRight className="hidden h-5 w-5 flex-none text-(--muted) sm:block" />
+                  <ChevronRight className="hidden h-5 w-5 flex-none text-muted sm:block" />
                 </Link>
               </li>
             );
@@ -170,7 +170,7 @@ export function EpisodePreview({ episodes, seriesTitle, seriesId }: EpisodePrevi
 
       {/* Preview pane (right on desktop) */}
       <aside className="order-1 lg:sticky lg:top-28 lg:order-2 lg:self-start">
-        <div className="overflow-hidden rounded-3xl border border-(--border) bg-black shadow-[0_30px_80px_rgba(0,0,0,0.45)]">
+        <div className="overflow-hidden rounded-3xl border border-border-themed bg-black shadow-[0_30px_80px_rgba(0,0,0,0.45)]">
           <div className="relative aspect-video w-full">
             <video
               key={focusedEpisode.id}
@@ -192,7 +192,7 @@ export function EpisodePreview({ episodes, seriesTitle, seriesId }: EpisodePrevi
             />
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/80 via-black/0 to-black/0" />
             <div className="absolute inset-x-0 bottom-0 space-y-1 p-5">
-              <p className="text-[0.65rem] font-semibold uppercase tracking-[0.3em] text-(--accent)">
+              <p className="text-[0.65rem] font-semibold uppercase tracking-[0.3em] text-accent">
                 {formatLabel(focusedEpisode.parentIndexNumber, focusedEpisode.indexNumber)} • Now previewing
               </p>
               <h3 className="text-xl font-semibold text-white sm:text-2xl">
@@ -206,7 +206,7 @@ export function EpisodePreview({ episodes, seriesTitle, seriesId }: EpisodePrevi
         </div>
         <Link
           href={watchPath(seriesId, focusedEpisode.id)}
-          className="mt-4 inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-(--accent) px-6 text-sm font-semibold text-white shadow-lg shadow-(--accent-soft) transition hover:scale-[1.01] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+          className="mt-4 inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-accent px-6 text-sm font-semibold text-white shadow-lg shadow-accent-soft transition hover:scale-[1.01] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
         >
           <Play className="h-5 w-5 fill-current" />
           Watch {focusedEpisode.title}

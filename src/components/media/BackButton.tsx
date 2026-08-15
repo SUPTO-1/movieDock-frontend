@@ -26,7 +26,7 @@ export function BackButton({ fallbackHref = "/", className, label = "Back" }: Ba
       aria-label={label}
       className={
         className ??
-        "inline-flex h-11 items-center gap-2 rounded-full border border-white/20 bg-black/40 px-4 text-sm font-medium text-white backdrop-blur transition hover:bg-black/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--accent)"
+        "inline-flex h-11 items-center gap-2 rounded-full border border-white/20 bg-black/40 px-4 text-sm font-medium text-white backdrop-blur transition hover:bg-black/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
       }
     >
       <ArrowLeft className="h-4 w-4" />

@@ -17,14 +17,14 @@ export function MediaCard({ item, href = mediaPath(item.id), className, showRail
     <Link
       href={href}
       className={cn(
-        "group relative block rounded-md transition duration-300 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--accent)",
+        "group relative block rounded-md transition duration-300 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
         showRail
           ? "min-w-[180px] flex-none snap-start hover:z-10 sm:min-w-[210px] xl:min-w-[240px]"
           : "h-full",
         className,
       )}
     >
-      <div className="relative aspect-2/3 overflow-hidden rounded-md bg-(--surface-elevated)">
+      <div className="relative aspect-2/3 overflow-hidden rounded-md bg-surface-elevated">
         <Image
           src={item.posterUrl}
           alt={item.title}
@@ -73,8 +73,8 @@ export function MediaCard({ item, href = mediaPath(item.id), className, showRail
 
       {/* Default info (when no hover) */}
       <div className="mt-2 px-1 transition-opacity duration-300 group-hover:opacity-0">
-        <p className="line-clamp-1 text-sm font-semibold text-(--foreground)">{item.title}</p>
-        <div className="mt-1 flex flex-wrap items-center gap-1.5 text-[0.65rem] text-(--muted)">
+        <p className="line-clamp-1 text-sm font-semibold text-foreground">{item.title}</p>
+        <div className="mt-1 flex flex-wrap items-center gap-1.5 text-[0.65rem] text-muted">
           <span>{item.year}</span>
           <span>•</span>
           <span>{item.rating}</span>
@@ -90,7 +90,7 @@ export function MediaCard({ item, href = mediaPath(item.id), className, showRail
       {/* Progress bar */}
       {typeof item.progress === "number" && item.progress > 0 ? (
         <div className="absolute inset-x-0 bottom-0 h-1 overflow-hidden rounded-full bg-white/20">
-          <div className="h-full bg-(--accent)" style={{ width: `${Math.min(100, Math.max(0, item.progress))}%` }} />
+          <div className="h-full bg-accent" style={{ width: `${Math.min(100, Math.max(0, item.progress))}%` }} />
         </div>
       ) : null}
     </Link>

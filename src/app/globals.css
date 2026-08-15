@@ -1,14 +1,20 @@
 @import "tailwindcss";
 
+/*
+ * Design tokens. Both themes share the same semantic names; only the
+ * values change in `.dark`. Components reference these via either
+ * `var(--token)` or the generated Tailwind utilities `bg-surface`,
+ * `text-foreground`, etc. — see the `@theme` block below.
+ */
 :root {
-  --background: #f3efe6;
-  --foreground: #111827;
-  --muted: #5f6b81;
-  --surface: rgba(255, 255, 255, 0.86);
-  --surface-elevated: rgba(249, 246, 239, 0.92);
-  --border: rgba(17, 24, 39, 0.08);
+  --background: #ffffff;
+  --foreground: #0f172a;
+  --muted: #64748b;
+  --surface: #ffffff;
+  --surface-elevated: #f8fafc;
+  --border: #e2e8f0;
   --accent: #e11d48;
-  --accent-soft: rgba(225, 29, 72, 0.14);
+  --accent-soft: rgba(225, 29, 72, 0.10);
 }
 
 .dark {
@@ -20,6 +26,22 @@
   --border: rgba(255, 255, 255, 0.08);
   --accent: #fb7185;
   --accent-soft: rgba(251, 113, 133, 0.18);
+}
+
+/*
+ * Tailwind 4 `@theme` — exposes our tokens as first-class utilities
+ * (`bg-surface`, `text-foreground`, `border-border`, etc.) so we can
+ * stop writing `bg-(--surface)` arbitrary values in components.
+ */
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-surface: var(--surface);
+  --color-surface-elevated: var(--surface-elevated);
+  --color-border-themed: var(--border);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
 }
 
 * {
@@ -36,11 +58,6 @@ body {
   color: var(--foreground);
   font-family: var(--font-geist-sans), sans-serif;
   min-height: 100vh;
-  background-image:
-    radial-gradient(circle at top left, rgba(225, 29, 72, 0.15), transparent 30%),
-    radial-gradient(circle at top right, rgba(59, 130, 246, 0.1), transparent 28%),
-    radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.06), transparent 22%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent 22%);
 }
 
 a {
@@ -58,13 +75,24 @@ a {
   outline-offset: 3px;
 }
 
+/*
+ * Shared surfaces. Used by cards, modals, and section dividers that
+ * were previously inlined with arbitrary shadow/border values.
+ */
 .surface-panel {
   background: var(--surface);
   border: 1px solid var(--border);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.14);
-  backdrop-filter: blur(18px);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 20px 60px rgba(15, 23, 42, 0.08);
 }
 
+.dark .surface-panel {
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+}
+
+/*
+ * Legacy aliases. Keep them around so the migration can happen
+ * component-by-component without breaking anything mid-refactor.
+ */
 .md-surface {
   background: var(--surface);
 }

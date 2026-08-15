@@ -1,8 +1,14 @@
 "use client";
 
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-
-type Theme = "light" | "dark";
+import { createContext, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import {
+  applyTheme,
+  persistLegacy,
+  readStoredLegacy,
+  readStoredMode,
+  resolveTheme,
+  type Theme,
+} from "@/lib/theme";
 
 type ThemeContextValue = {
   theme: Theme;
@@ -14,47 +20,34 @@ const ThemeContext = createContext<ThemeContextValue | null>(null);
 
 export function ThemeProvider({ children }: Readonly<{ children: ReactNode }>) {
   const [theme, setTheme] = useState<Theme>(() => {
-    if (typeof window === "undefined") {
-      return "dark";
-    }
-
-    const storedTheme = window.localStorage.getItem("moviedock-theme");
-
-    if (storedTheme === "light" || storedTheme === "dark") {
-      return storedTheme;
-    }
-
-    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    if (typeof window === "undefined") return "dark";
+    const mode = readStoredMode();
+    if (mode === "light" || mode === "dark") return mode;
+    if (mode === "system") return resolveTheme();
+    return readStoredLegacy() ?? resolveTheme();
   });
 
+  const lastAppliedRef = useRef<Theme | null>(null);
+
   useEffect(() => {
-    const root = document.documentElement;
-    root.classList.toggle("dark", theme === "dark");
-    window.localStorage.setItem("moviedock-theme", theme);
+    if (lastAppliedRef.current === theme) return;
+    lastAppliedRef.current = theme;
+    applyTheme(theme);
+    persistLegacy(theme);
   }, [theme]);
 
   const value = useMemo<ThemeContextValue>(
-    () => ({
-      theme,
-      resolvedTheme: theme,
-      setTheme,
-    }),
+    () => ({ theme, resolvedTheme: theme, setTheme }),
     [theme],
   );
 
-  return (
-    <ThemeContext.Provider value={value}>
-      {children}
-    </ThemeContext.Provider>
-  );
+  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 }
 
 export function useThemeContext() {
   const context = useContext(ThemeContext);
-
   if (!context) {
     throw new Error("useThemeContext must be used within ThemeProvider");
   }
-
   return context;
 }

@@ -1,4 +1,5 @@
-export type MediaType = "movie" | "series" | "anime" | "music" | "photo";
+export const MEDIA_TYPES = ["movie", "series", "anime", "music", "photo"] as const;
+export type MediaType = (typeof MEDIA_TYPES)[number];
 
 export type MediaStream = {
   index: number;

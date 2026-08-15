@@ -1,7 +1,7 @@
 import { HomeScreen } from "@/features/home/components/HomeScreen";
 import { EmptyState } from "@/components/media/EmptyState";
 import { AppShell } from "@/components/layout/AppShell";
-import { getMediaItems } from "@/lib/backend";
+import { getMediaItemsResult } from "@/lib/backend";
 import { animePath, libraryPath, moviesPath, tvShowsPath } from "@/lib/routes";
 import type { MediaItem } from "@/types/media";
 
@@ -37,11 +37,34 @@ function groupItems(all: MediaItem[]) {
 }
 
 export default async function HomePage() {
-  const [movies, series, anime] = await Promise.all([
-    getMediaItems("movie", 30),
-    getMediaItems("series", 30),
-    getMediaItems("anime", 30),
+  const [moviesResult, seriesResult, animeResult] = await Promise.all([
+    getMediaItemsResult("movie", 30),
+    getMediaItemsResult("series", 30),
+    getMediaItemsResult("anime", 30),
   ]);
+
+  const allUnreachable =
+    moviesResult.status === "unreachable" &&
+    seriesResult.status === "unreachable" &&
+    animeResult.status === "unreachable";
+
+  if (allUnreachable) {
+    return (
+      <AppShell>
+        <EmptyState
+          variant="offline"
+          tone="warning"
+          title="MovieDock backend is unreachable"
+          description="The Next.js server can't reach the Jellyfin proxy. Make sure the backend is running and your BACKEND_URL environment variable points to it, then refresh."
+          hint="Try the Scan Library button in the navbar once the proxy is back."
+        />
+      </AppShell>
+    );
+  }
+
+  const movies = moviesResult.items;
+  const series = seriesResult.items;
+  const anime = animeResult.items;
 
   if (movies.length === 0 && series.length === 0 && anime.length === 0) {
     return (

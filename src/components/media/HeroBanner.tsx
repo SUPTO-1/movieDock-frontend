@@ -97,22 +97,22 @@ export function HeroBanner({ item, variant = "static", primaryAction }: HeroBann
             }}
           />
         ) : null}
-        <div className="absolute inset-0 bg-gradient-to-t from-(--background) via-(--background)/80 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-r from-(--background)/95 via-(--background)/40 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/40 to-transparent" />
       </div>
 
       <div className="absolute inset-x-0 bottom-0 px-6 pb-12 sm:px-10 sm:pb-14 lg:px-16 lg:pb-20">
         <div className="mx-auto max-w-4xl space-y-5">
-          <p className="text-xs font-semibold uppercase tracking-[0.34em] text-(--accent)">
+          <p className="text-xs font-semibold uppercase tracking-[0.34em] text-accent">
             {item.type === "series" ? "Series" : item.type === "anime" ? "Anime" : "Movie"} • {item.year}
           </p>
-          <h1 className="text-5xl font-black tracking-tight text-(--foreground) drop-shadow-lg sm:text-7xl">
+          <h1 className="text-5xl font-black tracking-tight text-foreground drop-shadow-lg sm:text-7xl">
             {item.title}
           </h1>
-          <div className="flex flex-wrap items-center gap-3 text-sm text-(--muted)">
+          <div className="flex flex-wrap items-center gap-3 text-sm text-muted">
             {item.communityRating ? (
-              <span className="inline-flex items-center gap-1 rounded-full bg-(--surface-elevated) px-2 py-1 text-(--foreground)">
-                <Star className="h-3.5 w-3.5 fill-(--accent) text-(--accent)" />
+              <span className="inline-flex items-center gap-1 rounded-full bg-surface-elevated px-2 py-1 text-foreground">
+                <Star className="h-3.5 w-3.5 fill-accent text-accent" />
                 {item.communityRating.toFixed(1)}
               </span>
             ) : null}
@@ -126,13 +126,13 @@ export function HeroBanner({ item, variant = "static", primaryAction }: HeroBann
             {item.rating && item.rating !== "NR" ? (
               <>
                 <span>•</span>
-                <span className="rounded border border-(--border) px-1.5 py-0.5 text-xs">{item.rating}</span>
+                <span className="rounded border border-border-themed px-1.5 py-0.5 text-xs">{item.rating}</span>
               </>
             ) : null}
             {item.resolution ? (
               <>
                 <span>•</span>
-                <span className="rounded border border-(--border) px-1.5 py-0.5 text-xs">{item.resolution}</span>
+                <span className="rounded border border-border-themed px-1.5 py-0.5 text-xs">{item.resolution}</span>
               </>
             ) : null}
             {item.status ? (
@@ -142,27 +142,27 @@ export function HeroBanner({ item, variant = "static", primaryAction }: HeroBann
               </>
             ) : null}
           </div>
-          <p className="line-clamp-3 max-w-3xl text-base leading-8 text-(--muted) sm:text-lg">
+          <p className="line-clamp-3 max-w-3xl text-base leading-8 text-muted sm:text-lg">
             {item.overview}
           </p>
           <div className="flex flex-wrap gap-3">
             <Link
               href={playHref}
-              className="inline-flex h-12 items-center gap-2 rounded-full bg-(--accent) px-7 text-base font-semibold text-white shadow-lg shadow-(--accent-soft) transition hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+              className="inline-flex h-12 items-center gap-2 rounded-full bg-accent px-7 text-base font-semibold text-white shadow-lg shadow-accent-soft transition hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
             >
               <Play className="h-5 w-5 fill-current" />
               {playLabel}
             </Link>
             <button
               type="button"
-              className="inline-flex h-12 items-center gap-2 rounded-full border border-(--border) bg-(--surface)/80 px-5 text-sm font-semibold text-(--foreground) backdrop-blur transition hover:bg-(--surface-elevated) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--accent)"
+              className="inline-flex h-12 items-center gap-2 rounded-full border border-border-themed bg-surface/80 px-5 text-sm font-semibold text-foreground backdrop-blur transition hover:bg-surface-elevated focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
             >
               <Plus className="h-4 w-4" />
               My List
             </button>
             <Link
               href={mediaPath(item.id)}
-              className="inline-flex h-12 items-center gap-2 rounded-full border border-(--border) bg-(--surface)/80 px-5 text-sm font-semibold text-(--foreground) backdrop-blur transition hover:bg-(--surface-elevated) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--accent)"
+              className="inline-flex h-12 items-center gap-2 rounded-full border border-border-themed bg-surface/80 px-5 text-sm font-semibold text-foreground backdrop-blur transition hover:bg-surface-elevated focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
             >
               <Info className="h-4 w-4" />
               More info

@@ -91,9 +91,9 @@ export function ContinueWatchingCard({ item, className, onRemoved, containerRef 
             ? `Continue watching ${media.title}, ${episodeLabelText}`
             : `Resume ${media.title}`
         }
-        className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--accent)"
+        className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
       >
-        <div className="relative aspect-16/10 overflow-hidden rounded-md bg-(--surface-elevated)">
+        <div className="relative aspect-16/10 overflow-hidden rounded-md bg-surface-elevated">
           <Image
             src={media.backdropUrl}
             alt={media.title}
@@ -106,7 +106,7 @@ export function ContinueWatchingCard({ item, className, onRemoved, containerRef 
           <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/50 to-black/10" />
 
           <div className="absolute inset-x-0 bottom-0 space-y-2 p-3 sm:p-4">
-            <div className="inline-flex items-center gap-1.5 rounded-full bg-(--accent)/90 px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-black">
+            <div className="inline-flex items-center gap-1.5 rounded-full bg-accent/90 px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-black">
               <Play className="h-3 w-3 fill-current" />
               {isEpisode ? "Resume episode" : "Resume"}
             </div>
@@ -122,7 +122,7 @@ export function ContinueWatchingCard({ item, className, onRemoved, containerRef 
 
         <div className="absolute inset-x-0 bottom-0 h-1 overflow-hidden rounded-full bg-white/15">
           <div
-            className="h-full bg-(--accent) transition-[width] duration-500"
+            className="h-full bg-accent transition-[width] duration-500"
             style={{ width: `${safeProgress}%` }}
           />
         </div>
@@ -154,7 +154,7 @@ export function ContinueWatchingCard({ item, className, onRemoved, containerRef 
           "pointer-events-none opacity-0 group-hover/card:pointer-events-auto group-hover/card:opacity-100",
           "focus-visible:pointer-events-auto focus-visible:opacity-100",
           "hover:bg-black/90 hover:border-white/60",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--accent)",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
         )}
       >
         <X className="h-3.5 w-3.5" />

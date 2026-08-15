@@ -62,7 +62,7 @@ export function ScanLibraryButton() {
         disabled={state !== "idle"}
         aria-label="Scan Jellyfin library"
         title="Scan Jellyfin library for new media"
-        className="relative inline-flex h-10 items-center gap-2 overflow-hidden rounded-full border border-(--border) bg-(--surface) px-3 text-xs font-medium text-(--foreground) transition hover:bg-(--surface-elevated) disabled:cursor-progress disabled:opacity-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--accent)"
+        className="relative inline-flex h-10 items-center gap-2 overflow-hidden rounded-full border border-border-themed bg-surface px-3 text-xs font-medium text-foreground transition hover:bg-surface-elevated disabled:cursor-progress disabled:opacity-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
       >
         <span
           aria-hidden="true"
@@ -85,7 +85,7 @@ export function ScanLibraryButton() {
           )}
           <span className="hidden lg:inline">{label}</span>
           {state === "scanning" ? (
-            <span className="hidden rounded bg-(--accent)/15 px-1.5 py-0.5 text-[0.65rem] font-semibold tabular-nums text-(--accent) lg:inline">
+            <span className="hidden rounded bg-accent/15 px-1.5 py-0.5 text-[0.65rem] font-semibold tabular-nums text-accent lg:inline">
               {Math.min(99, Math.round(progress))}%
             </span>
           ) : null}

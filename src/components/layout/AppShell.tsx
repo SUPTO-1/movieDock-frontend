@@ -9,7 +9,7 @@ type AppShellProps = {
 
 export function AppShell({ children, flush = false }: AppShellProps) {
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top,rgba(225,29,72,0.15),transparent_22%),linear-gradient(180deg,var(--background),var(--background))]">
+    <div className="min-h-screen bg-background text-foreground">
       <Navbar />
       <main className={cn(
         "w-full pb-10",

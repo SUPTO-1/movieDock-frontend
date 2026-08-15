@@ -131,22 +131,21 @@ export const MediaPlayer = forwardRef<MediaPlayerHandle, MediaPlayerProps>(funct
   const stalledTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const bufferedEndRef = useRef(0);
 
-  const streams = useMemo(() => item.mediaStreams ?? [], [item.mediaStreams]);
-  const defaultAudio = useMemo(
-    () =>
-      streams.find((s) => s.type === "Audio" && s.isDefault) ??
-      streams.find((s) => s.type === "Audio"),
-    [streams],
-  );
-  const defaultSubtitle = useMemo(
-    () =>
-      streams.find((s) => s.type === "Subtitle" && s.isDefault) ??
-      streams.find((s) => s.type === "Subtitle" && s.isForced),
-    [streams],
-  );
+  const streams = useMemo(() => {
+    const all = item.mediaStreams ?? [];
+    const audio = all.filter((s) => s.type === "Audio");
+    const subtitle = all.filter((s) => s.type === "Subtitle");
+    return {
+      audio,
+      subtitle,
+      defaultAudio: audio.find((s) => s.isDefault) ?? audio[0],
+      defaultSubtitle:
+        subtitle.find((s) => s.isDefault) ?? subtitle.find((s) => s.isForced),
+    };
+  }, [item.mediaStreams]);
 
-  const [audioIndex, setAudioIndex] = useState<number | undefined>(defaultAudio?.index);
-  const [subtitleIndex, setSubtitleIndex] = useState<number | undefined>(defaultSubtitle?.index);
+  const [audioIndex, setAudioIndex] = useState<number | undefined>(streams.defaultAudio?.index);
+  const [subtitleIndex, setSubtitleIndex] = useState<number | undefined>(streams.defaultSubtitle?.index);
   const [showAudioMenu, setShowAudioMenu] = useState(false);
   const [showSubtitleMenu, setShowSubtitleMenu] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -164,29 +163,11 @@ export const MediaPlayer = forwardRef<MediaPlayerHandle, MediaPlayerProps>(funct
   const [duration, setDuration] = useState(0);
   const [bufferedEnd, setBufferedEnd] = useState(0);
 
-  const audioStreams = useMemo(() => streams.filter((s) => s.type === "Audio"), [streams]);
-  const subtitleStreams = useMemo(
-    () => streams.filter((s) => s.type === "Subtitle"),
-    [streams],
-  );
+  const audioStreams = streams.audio;
+  const subtitleStreams = streams.subtitle;
 
-  // Note: episode swaps remount this component entirely because the parent
-  // passes `key={item.id}` — see WatchView. So `defaultAudio?.index` etc. are
-  // picked up fresh on mount via the useState initializers above, and no
-  // sync effect is required.
-
-  // Auto-retry the stream when loadError is set. Counts down 5 seconds,
-  // then bumps retryToken to force the video to reload without a refresh.
-  // The countdown state is only rendered inside the loadError overlay, so
-  // we don't need to reset it when loadError clears — the next session
-  // overwrites it. Initial countdown is set via queueMicrotask to avoid the
+  // Auto-retry the stream when loadError is set. `queueMicrotask` avoids the
   // cascading-render warning from React Compiler's set-state-in-effect rule.
-  //
-  // NOTE: This effect and the next two (the Jellyfin mount effect and the
-  // imperative src-swap effect) are intentionally kept inline rather than
-  // extracted into a hook. They share ~12 mutable refs and 6 state setters
-  // and would require a 30-parameter ref-bag to extract — splitting would
-  // hide more than it reveals.
   useEffect(() => {
     if (!loadError) return;
     let cancelled = false;
@@ -230,10 +211,10 @@ export const MediaPlayer = forwardRef<MediaPlayerHandle, MediaPlayerProps>(funct
     [],
   );
 
-  // Mount the <video> element effect: wires up Jellyfin progress reporting,
-  // track switching, and the loading / error handlers. Re-runs when the
-  // episode changes (`itemId`) or on manual retry — but NOT on track
-  // switches, which now happen via imperative src swap below.
+  // NOTE: This effect and the next one (the imperative src-swap effect) are
+  // intentionally kept inline rather than extracted into a hook. They share
+  // ~12 mutable refs and 6 state setters; extracting them would require a
+  // 30-parameter ref-bag and would hide more than it reveals.
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
@@ -309,11 +290,13 @@ export const MediaPlayer = forwardRef<MediaPlayerHandle, MediaPlayerProps>(funct
         // For episodes, collapse onto the parent series so the Continue Watching
         // card shows the series poster and only one entry per series survives.
         const isEpisode = item.parentIndexNumber !== undefined || item.indexNumber !== undefined;
-        const isSeriesEntry = Boolean(parentSeriesId) && Boolean(parentSeriesTitle);
+        const isSeriesEntry = parentSeriesId !== undefined && parentSeriesTitle !== undefined;
+        const seriesId = isSeriesEntry ? parentSeriesId : undefined;
+        const seriesTitle = isSeriesEntry ? parentSeriesTitle : undefined;
         recordProgress({
           media: {
-            id: isSeriesEntry ? (parentSeriesId as string) : item.id,
-            title: isSeriesEntry ? (parentSeriesTitle as string) : item.title,
+            id: seriesId ?? item.id,
+            title: seriesTitle ?? item.title,
             type: item.type,
             posterUrl: parentSeriesArtwork?.posterUrl ?? item.posterUrl,
             backdropUrl: parentSeriesArtwork?.backdropUrl ?? item.backdropUrl,
@@ -323,8 +306,8 @@ export const MediaPlayer = forwardRef<MediaPlayerHandle, MediaPlayerProps>(funct
             genres: item.genres,
             overview: item.overview,
           },
-          seriesId: isEpisode ? parentSeriesId : undefined,
-          seriesName: isEpisode ? parentSeriesTitle : undefined,
+          seriesId: isEpisode ? seriesId : undefined,
+          seriesName: isEpisode ? seriesTitle : undefined,
           episode: isEpisode
             ? {
                 id: item.id,
@@ -492,10 +475,9 @@ export const MediaPlayer = forwardRef<MediaPlayerHandle, MediaPlayerProps>(funct
     subtitleIndexRef.current = subtitleIndex;
   }, [audioIndex, subtitleIndex]);
 
-  // Imperative src swap on track changes. By setting `video.src` directly
-  // (not via a JSX `src` attribute) we prevent React from re-rendering the
-  // URL back to the previous value when it re-runs. The video element keeps
-  // its buffered context and the surrounding controls don't flicker.
+  // Setting `video.src` directly (rather than via a JSX `src` attribute) keeps
+  // React from re-rendering the URL back to the previous value during reload,
+  // and lets the video keep its buffered context.
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
@@ -503,21 +485,13 @@ export const MediaPlayer = forwardRef<MediaPlayerHandle, MediaPlayerProps>(funct
       audioStreamIndex: audioIndex,
       subtitleStreamIndex: subtitleIndex,
     });
-    // Track every (itemId, tracks, retry) we've already loaded. Skipping
-    // when the key matches lets us avoid double-loading on the first commit
-    // while still honoring `retryToken` bumps (which produce a new key).
-    // `itemId` is the first segment so that when the parent remounts the
-    // player on episode change (key={item.id}) the previous key — even if
-    // it somehow survived — would never match and we'd always load fresh.
+    // `itemId` first so an episode remount (key={item.id}) always loads fresh.
     const sourceKey = `${itemId}|${audioIndex ?? ""}|${subtitleIndex ?? ""}|${retryToken}`;
     if (loadedSourceKeyRef.current === sourceKey) return;
     loadedSourceKeyRef.current = sourceKey;
-    // Capture the current play/pause state so the loadedmetadata handler
-    // can decide whether to auto-resume after the new stream loads. On the
-    // first load (or before any source has loaded yet) `video.readyState`
-    // is 0 (HAVE_NOTHING) and `paused` defaults to true — fall back to
-    // `autoPlay` so the initial autoplay mount still works. On any later
-    // load (track switch / manual retry) honor whatever the user had set.
+    // Capture play/pause so loadedmetadata can decide whether to auto-resume
+    // after the new stream loads. On first load `video.readyState` is 0 and
+    // `paused` defaults to true — fall back to `autoPlay`.
     wasPlayingBeforeSwapRef.current = video.readyState < 1 ? autoPlay : !video.paused;
     isSwitchingTrackRef.current = true;
     setIsSwitchingTrack(true);
@@ -525,11 +499,6 @@ export const MediaPlayer = forwardRef<MediaPlayerHandle, MediaPlayerProps>(funct
     video.load();
   }, [itemId, audioIndex, subtitleIndex, retryToken, autoPlay]);
 
-  // Track switching — just sets state. The imperative src-swap effect above
-  // handles reloading the stream with the new audio/subtitle. The
-  // isSwitchingTrackRef freezes the displayed time during the swap so the
-  // UI doesn't flash 0:00, and wasPlayingBeforeSwapRef restores the user's
-  // play/pause state after the new stream's loadedmetadata fires.
   const switchAudio = useCallback(
     (index: number | undefined) => {
       setShowAudioMenu(false);
@@ -539,10 +508,9 @@ export const MediaPlayer = forwardRef<MediaPlayerHandle, MediaPlayerProps>(funct
         wasPlayingBeforeSwapRef.current = !video.paused;
       }
       seekedRef.current = false;
-      // Force the imperative src-swap effect to reload even when the same
-      // track is re-selected — the previous early-return shortcut left no way
-      // to retry a silently-failed swap (e.g. Jellyfin ignored
-      // AudioStreamIndex for the source).
+      // Bump retryToken when re-selecting the same track — gives the user a
+      // way to recover from a silently-failed swap (e.g. Jellyfin ignored
+      // AudioStreamIndex).
       if (index !== audioIndex) {
         setAudioIndex(index);
       } else {
@@ -719,7 +687,7 @@ export const MediaPlayer = forwardRef<MediaPlayerHandle, MediaPlayerProps>(funct
   const bufferedPct =
     Number.isFinite(duration) && duration > 0 ? Math.min((bufferedEnd / duration) * 100, 100) : 0;
 
-  const shellClass = `player-shell relative overflow-hidden rounded-3xl border border-(--border) bg-black shadow-[0_30px_80px_rgba(0,0,0,0.45)] ${
+  const shellClass = `player-shell relative overflow-hidden rounded-3xl border border-border-themed bg-black shadow-[0_30px_80px_rgba(0,0,0,0.45)] ${
     theaterMode ? "max-w-5xl mx-auto transition-[max-width] duration-300" : ""
   }`;
 
