@@ -1,16 +1,9 @@
-"use client";
-
-import { useSyncExternalStore } from "react";
 import { AppShell } from "@/components/layout/AppShell";
 import { HeroBanner } from "@/components/media/HeroBanner";
 import { MediaRow } from "@/components/media/MediaRow";
-import { ContinueWatchingRow } from "@/components/media/ContinueWatchingRow";
+import { ContinueWatchingIsland } from "@/components/media/ContinueWatchingIsland";
+import { mediaPath, watchPath } from "@/lib/routes";
 import type { MediaItem } from "@/types/media";
-import {
-  EMPTY_CONTINUE_WATCHING,
-  loadContinueWatching,
-  subscribeToContinueWatching,
-} from "@/lib/continueWatching";
 
 type LibraryRow = {
   title: string;
@@ -27,14 +20,8 @@ type HomeScreenProps = {
 
 export function HomeScreen({ heroMedia, recentlyAdded, libraryRows }: HomeScreenProps) {
   const isSeries = heroMedia.type === "series" || heroMedia.type === "anime";
-  const playHref = isSeries ? `/media/${heroMedia.id}` : `/watch/${heroMedia.id}`;
+  const playHref = isSeries ? mediaPath(heroMedia.id) : watchPath(heroMedia.id);
   const playLabel = isSeries ? "View Series" : "Play";
-
-  const continueWatching = useSyncExternalStore(
-    subscribeToContinueWatching,
-    () => loadContinueWatching(20),
-    () => EMPTY_CONTINUE_WATCHING,
-  );
 
   return (
     <AppShell flush>
@@ -46,13 +33,8 @@ export function HomeScreen({ heroMedia, recentlyAdded, libraryRows }: HomeScreen
         />
 
         <div className="mx-auto w-full max-w-[1600px] space-y-10 px-4 pb-12 sm:px-6 lg:px-8 lg:space-y-14">
-          {continueWatching.length > 0 ? (
-            <ContinueWatchingRow
-              title="Continue Watching"
-              description="Pick up exactly where you left off — movies and series you've started in the last 15 days."
-              items={continueWatching}
-            />
-          ) : null}
+          <ContinueWatchingIsland />
+
           {recentlyAdded.length > 0 ? (
             <MediaRow
               title="Recently Added"
@@ -61,6 +43,7 @@ export function HomeScreen({ heroMedia, recentlyAdded, libraryRows }: HomeScreen
               href="/library"
             />
           ) : null}
+
           {libraryRows.map((row) => (
             <MediaRow
               key={row.title}

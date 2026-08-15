@@ -80,13 +80,13 @@ export function ContinueWatchingRow({ title, description, items, href }: Continu
     <section className="space-y-4">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h2 className="text-xl font-semibold tracking-tight text-(--foreground) sm:text-2xl">{title}</h2>
-          {description ? <p className="mt-1 max-w-3xl text-sm text-(--muted)">{description}</p> : null}
+          <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">{title}</h2>
+          {description ? <p className="mt-1 max-w-3xl text-sm text-muted">{description}</p> : null}
         </div>
         {href ? (
           <Link
             href={href}
-            className="inline-flex h-9 items-center gap-1 text-sm font-medium text-(--accent) transition hover:text-(--foreground) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--accent)"
+            className="inline-flex h-9 items-center gap-1 text-sm font-medium text-accent transition hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
           >
             Explore all
             <ChevronRight className="h-4 w-4" />
@@ -122,7 +122,7 @@ export function ContinueWatchingRow({ title, description, items, href }: Continu
             type="button"
             onClick={() => scrollBy("left")}
             aria-label="Scroll left"
-            className="absolute left-0 top-1/2 -translate-y-1/2 hidden h-full items-center bg-gradient-to-r from-(--background)/90 via-(--background)/60 to-transparent px-3 text-(--foreground) opacity-0 transition group-hover/row:opacity-100 md:flex"
+            className="absolute left-0 top-1/2 -translate-y-1/2 hidden h-full items-center bg-gradient-to-r from-background/90 via-background/60 to-transparent px-3 text-foreground opacity-0 transition group-hover/row:opacity-100 md:flex"
           >
             <ChevronLeft className="h-8 w-8" />
           </button>
@@ -132,7 +132,7 @@ export function ContinueWatchingRow({ title, description, items, href }: Continu
             type="button"
             onClick={() => scrollBy("right")}
             aria-label="Scroll right"
-            className="absolute right-0 top-1/2 -translate-y-1/2 hidden h-full items-center bg-gradient-to-l from-(--background)/90 via-(--background)/60 to-transparent px-3 text-(--foreground) opacity-0 transition group-hover/row:opacity-100 md:flex"
+            className="absolute right-0 top-1/2 -translate-y-1/2 hidden h-full items-center bg-gradient-to-l from-background/90 via-background/60 to-transparent px-3 text-foreground opacity-0 transition group-hover/row:opacity-100 md:flex"
           >
             <ChevronRight className="h-8 w-8" />
           </button>

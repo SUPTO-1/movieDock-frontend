@@ -3,12 +3,29 @@
 import { useCallback, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react";
-import { MediaPlayer } from "@/app/media/[id]/MediaPlayer";
 import type { MediaItem } from "@/types/media";
 import { mediaPath, watchPath } from "@/lib/routes";
 import { episodeLabel } from "@/lib/utils";
+
+/**
+ * Dynamic-import the heavy player. `ssr: false` keeps it out of the
+ * SSR'd HTML and out of the watch route's server bundle — the player
+ * only loads when the watch page is opened. While the chunk is being
+ * fetched we render a lightweight black placeholder that matches the
+ * player's aspect ratio so there's no layout shift.
+ */
+const MediaPlayer = dynamic(
+  () => import("@/components/media/player/MediaPlayer").then((mod) => mod.MediaPlayer),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="aspect-video w-full animate-pulse bg-black/95" aria-hidden="true" />
+    ),
+  },
+);
 
 type WatchViewProps = {
   item: MediaItem;
@@ -160,7 +177,7 @@ export function WatchView({
                   ) : null}
                 </div>
                 <div className="min-w-0 flex-1 space-y-0.5 text-right">
-                  <p className="text-[0.65rem] font-semibold uppercase tracking-[0.34em] text-(--accent)">
+                  <p className="text-[0.65rem] font-semibold uppercase tracking-[0.34em] text-accent">
                     Next · {episodeLabel(nextEpisode)}
                   </p>
                   <p className="line-clamp-1 text-sm font-semibold text-white">{nextEpisode.title}</p>

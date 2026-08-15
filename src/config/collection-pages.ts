@@ -1,4 +1,5 @@
 import type { MediaType } from "@/types/media";
+import type { MediaUploadKind } from "@/lib/routes";
 
 export type CollectionPageSlug = "movies" | "tv-shows" | "anime" | "library";
 
@@ -8,6 +9,7 @@ export type CollectionPageConfig = {
   eyebrow: string;
   title: string;
   description: string;
+  uploadKind?: MediaUploadKind;
   emptyVariant?: "no-matches" | "no-content";
   emptyTitle?: string;
   emptyDescription?: string;
@@ -20,6 +22,7 @@ export const collectionPages: CollectionPageConfig[] = [
     eyebrow: "Library / Movies",
     title: "Movies",
     description: "Curated cinematic picks from your Jellyfin library.",
+    uploadKind: "movies",
   },
   {
     slug: "tv-shows",
@@ -27,6 +30,7 @@ export const collectionPages: CollectionPageConfig[] = [
     eyebrow: "Library / TV Shows",
     title: "TV Shows",
     description: "Serialized stories from your Jellyfin library.",
+    uploadKind: "series",
   },
   {
     slug: "anime",
@@ -34,6 +38,7 @@ export const collectionPages: CollectionPageConfig[] = [
     eyebrow: "Library / Anime",
     title: "Anime",
     description: "Stylized worlds and character-first storytelling.",
+    uploadKind: "anime",
     emptyVariant: "no-content",
     emptyTitle: "No anime in your library",
     emptyDescription: "Add an anime library to Jellyfin and it will appear here automatically.",

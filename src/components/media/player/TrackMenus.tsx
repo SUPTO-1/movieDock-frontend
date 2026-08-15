@@ -211,7 +211,7 @@ export function MenuItem({ active, title, subtitle, onClick, icon }: MenuItemPro
           active ? "bg-white/10 text-white" : "text-white/80 hover:bg-white/5"
         }`}
       >
-        <span className="flex h-5 w-5 flex-none items-center justify-center text-(--accent)">
+        <span className="flex h-5 w-5 flex-none items-center justify-center text-accent">
           {icon}
         </span>
         <span className="min-w-0 flex-1">

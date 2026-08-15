@@ -79,7 +79,7 @@ export function NavbarSearch() {
         }}
         className="relative"
       >
-        <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-(--muted)" />
+        <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
         <input
           ref={inputRef}
           type="search"
@@ -90,7 +90,7 @@ export function NavbarSearch() {
           }}
           onFocus={() => setOpen(true)}
           placeholder="Search titles, genres, people"
-          className="h-10 w-full rounded-full border border-(--border) bg-(--surface)/80 pl-11 pr-10 text-sm text-(--foreground) outline-none transition placeholder:text-(--muted) focus:border-(--accent) focus:bg-(--surface) focus:ring-2 focus:ring-(--accent-soft)"
+          className="h-10 w-full rounded-full border border-border-themed bg-surface/80 pl-11 pr-10 text-sm text-foreground outline-none transition placeholder:text-muted focus:border-accent focus:bg-surface focus:ring-2 focus:ring-accent-soft"
           aria-label="Search"
         />
         {query ? (
@@ -101,7 +101,7 @@ export function NavbarSearch() {
               inputRef.current?.focus();
             }}
             aria-label="Clear search"
-            className="absolute right-3 top-1/2 inline-flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-full text-(--muted) transition hover:bg-(--surface-elevated) hover:text-(--foreground)"
+            className="absolute right-3 top-1/2 inline-flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-full text-muted transition hover:bg-surface-elevated hover:text-foreground"
           >
             <X className="h-3.5 w-3.5" />
           </button>
@@ -109,14 +109,14 @@ export function NavbarSearch() {
       </form>
 
       {showDropdown ? (
-        <div className="absolute left-0 right-0 top-12 z-50 overflow-hidden rounded-2xl border border-(--border) bg-(--surface) shadow-[0_30px_80px_rgba(0,0,0,0.25)]">
+        <div className="absolute left-0 right-0 top-12 z-50 overflow-hidden rounded-2xl border border-border-themed bg-surface shadow-[0_30px_80px_rgba(0,0,0,0.25)]">
           {loading ? (
-            <p className="px-4 py-3 text-xs text-(--muted)">Searching…</p>
+            <p className="px-4 py-3 text-xs text-muted">Searching…</p>
           ) : results.length === 0 ? (
-            <p className="px-4 py-3 text-xs text-(--muted)">No matches for "{query.trim()}"</p>
+            <p className="px-4 py-3 text-xs text-muted">No matches for "{query.trim()}"</p>
           ) : (
             <>
-              <ul className="max-h-96 overflow-y-auto divide-y divide-(--border)">
+              <ul className="max-h-96 overflow-y-auto divide-y divide-border-themed">
                 {results.map((item) => {
                   const Icon = item.type === "series" || item.type === "anime" ? Tv : Film;
                   return (
@@ -128,9 +128,9 @@ export function NavbarSearch() {
                           setQuery("");
                           router.push(mediaPath(item.id));
                         }}
-                        className="flex w-full items-center gap-3 px-3 py-2 text-left transition hover:bg-(--surface-elevated) focus-visible:bg-(--surface-elevated) focus-visible:outline-none"
+                        className="flex w-full items-center gap-3 px-3 py-2 text-left transition hover:bg-surface-elevated focus-visible:bg-surface-elevated focus-visible:outline-none"
                       >
-                        <div className="relative h-12 w-9 flex-none overflow-hidden rounded-md bg-(--surface-elevated)">
+                        <div className="relative h-12 w-9 flex-none overflow-hidden rounded-md bg-surface-elevated">
                           {item.posterUrl ? (
                             <Image
                               src={item.posterUrl}
@@ -143,8 +143,8 @@ export function NavbarSearch() {
                           ) : null}
                         </div>
                         <div className="min-w-0 flex-1">
-                          <p className="line-clamp-1 text-sm font-medium text-(--foreground)">{item.title}</p>
-                          <p className="flex items-center gap-1 text-[0.7rem] text-(--muted)">
+                          <p className="line-clamp-1 text-sm font-medium text-foreground">{item.title}</p>
+                          <p className="flex items-center gap-1 text-[0.7rem] text-muted">
                             <Icon className="h-3 w-3" />
                             <span className="capitalize">{item.type}</span>
                             <span>•</span>
@@ -159,7 +159,7 @@ export function NavbarSearch() {
               <button
                 type="button"
                 onClick={goToSearchPage}
-                className="block w-full border-t border-(--border) bg-(--surface-elevated) px-4 py-2 text-left text-xs font-semibold text-(--accent) transition hover:text-(--foreground)"
+                className="block w-full border-t border-border-themed bg-surface-elevated px-4 py-2 text-left text-xs font-semibold text-accent transition hover:text-foreground"
               >
                 See all results for "{query.trim()}"
               </button>
